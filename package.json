@@ -1,11 +1,15 @@
 {
   "name": "simple-canvas",
-  "private": true,
-  "version": "0.0.0",
+  "description": "A simple library for making graphics and games using Canvas API",
+  "author": "Siddharth Roy",
+  "private": false,
+  "version": "0.1.0",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\""
   },
   "files": [
     "dist"
@@ -17,10 +21,5 @@
       "import": "./dist/simpleCanvas.es.js",
       "require": "./dist/simpleCanvas.umd.js"
     }
-  },
-  "devDependencies": {
-    "typescript": "^4.5.4",
-    "vite": "^2.9.7",
-    "vite-plugin-dts": "^1.1.1"
   }
 }
