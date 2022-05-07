@@ -1,26 +1,31 @@
 {
-  "name": "simple-canvas",
+  "name": "simple-canvas2d",
   "description": "A simple library for making graphics and games using Canvas API",
   "author": "Siddharth Roy",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "license": "MIT",
   "repository": "https://github.com/siddharthroy12/simple-canvas",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\""
+    "prepack": "tsc && vite build"
   },
   "files": [
     "dist"
   ],
-  "main": "./dist/simpleCanvas.umd.js",
-  "module": "./dist/simpleCanvas.es.js",
+  "main": "./dist/simpleCanvas2d.umd.js",
+  "module": "./dist/simpleCanvas2d.es.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/simpleCanvas.es.js",
-      "require": "./dist/simpleCanvas.umd.js"
+      "import": "./dist/simpleCanvas2d.es.js",
+      "require": "./dist/simpleCanvas2d.umd.js"
     }
+  },
+  "devDependencies": {
+    "vite": "^2.9.8",
+    "vite-plugin-dts": "^1.1.1"
   }
 }

@@ -5,15 +5,13 @@ import dts from 'vite-plugin-dts';
 
 module.exports = defineConfig({
   plugins: [
-    dts({
-      insertTypesEntry: true,
-    }),
+    dts(),
   ],
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
-      name: 'simpleCanvas',
-      fileName: (format) => `simpleCanvas.${format}.js`
+      name: 'simpleCanvas2d',
+      fileName: (format) => `index.${format}.js`
     }
   }
 })
