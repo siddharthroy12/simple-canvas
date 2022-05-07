@@ -13,6 +13,9 @@ type Point = {
   y: number;
 };
 
+// TODO:
+// Add window to canvas camera pos
+// Add canvas camera pos to canvas
 
 class SimpleCanvas {
   canvasContext: CanvasRenderingContext2D|null;
@@ -39,9 +42,11 @@ class SimpleCanvas {
 
   resizeRenderResolution(newRenderWidth: number, newRenderHeight: number) {
     if (newRenderWidth) {
+      this.renderWidth = newRenderWidth;
       this.canvas.width = newRenderWidth;
     }
     if (newRenderHeight) {
+      this.renderHeight = newRenderHeight;
       this.canvas.height = newRenderHeight;
     }
   }
@@ -176,7 +181,6 @@ class SimpleCanvas {
       this.canvasContext.closePath();
     }
   }
-
   drawRectangleRounded(posX = 0, posY = 0, width = 0, height = 0, radius: Radius, rotation = 0, color = DEFAULT_FILL_STROKE_COLOR) {
     if (this.canvasContext) {
       this.canvasContext.fillStyle = color;
@@ -260,9 +264,10 @@ class SimpleCanvas {
     }
   }
 
-  drawShapeOutline(points: Point[], origin = { x: 0, y: 0 }, rotation = 0, color = DEFAULT_FILL_STROKE_COLOR) {
+  drawShapeOutline(points: Point[], origin = { x: 0, y: 0 }, rotation = 0, width = 1, color = DEFAULT_FILL_STROKE_COLOR) {
     if (this.canvasContext) {
       this.canvasContext.strokeStyle = color;
+      this.canvasContext.lineWidth = width;
       this.canvasContext.save();
       this.canvasContext.translate(origin.x, origin.y);
       this.canvasContext.rotate(rotation);
@@ -294,6 +299,21 @@ class SimpleCanvas {
     }
   }
 
+  drawTextOutline(text: string, posX = 0, posY = 0, fontSize = 12, fontFamily = "serif", align: 'left' | 'right' | 'center' | 'start' | 'end' = "start", direction: 'ltr' | 'rtl' = 'ltr', maxWidth?: number, rotation = 0, origin = { x: 0, y: 0 }, outlineWidth = 1, color = DEFAULT_FILL_STROKE_COLOR) {
+    if (this.canvasContext) {
+      this.canvasContext.strokeStyle = color;
+      this.canvasContext.lineWidth = outlineWidth;
+      this.canvasContext.save();
+      this.canvasContext.textAlign = align;
+      this.canvasContext.direction = direction;
+      this.canvasContext.font = `${fontSize} ${fontFamily}`;
+      this.canvasContext.translate(origin.x, origin.y);
+      this.canvasContext.rotate(rotation);
+      this.canvasContext.strokeText(text, posX - origin.x, posY - origin.y, maxWidth);
+      this.canvasContext.restore();
+    }
+  }
+
   camera(posX = 0, posY = 0, zoom = 1, rotation = 0) {
     if (this.canvasContext) {
       this.canvasContext.translate(posX + this.canvas.width / 2, posY + this.canvas.height / 2);
@@ -301,5 +321,20 @@ class SimpleCanvas {
       this.canvasContext.rotate(rotation);
     }
   }
+
+  static async loadImage(url: string) {
+    return new Promise(r => { let i = new Image(); i.onload = (() => r(i)); i.src = url; });
+  }
+
+  drawImage(image: HTMLImageElement, sx = 0, sy = 0, sWidth = 0, sHeight = 0, dx = 0, dy = 0, dWidth = 0, dHeight = 0, rotation = 0) {
+    if (this.canvasContext) {
+      this.canvasContext.save();
+      this.canvasContext.translate(dx + dWidth / 2, dy + dHeight / 2);
+      this.canvasContext.rotate(rotation);
+      this.canvasContext.drawImage(image, sx, sy, sWidth, sHeight, -dWidth / 2, -dHeight / 2, dWidth, dHeight);
+      this.canvasContext.restore();
+    }
+  }
 }
+
 export { SimpleCanvas as default };
