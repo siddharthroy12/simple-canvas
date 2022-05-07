@@ -1,0 +1,26 @@
+{
+  "name": "simple-canvas",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/simpleCanvas.umd.js",
+  "module": "./dist/simpleCanvas.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/simpleCanvas.es.js",
+      "require": "./dist/simpleCanvas.umd.js"
+    }
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4",
+    "vite": "^2.9.7",
+    "vite-plugin-dts": "^1.1.1"
+  }
+}
