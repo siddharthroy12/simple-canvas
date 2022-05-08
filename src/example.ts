@@ -13,10 +13,12 @@ if (root) {
 
   function loop() {
     canvas.clear('#f1f1f1');
-    canvas.cameraStart(0, 0, 1, Math.PI*0.25);
+    canvas.cameraStart(0, 0, 2, Math.PI*0.25);
     canvas.drawCircle(0 , 0, 10);
     canvas.drawRectangle(50, -10, 40, 20, Math.PI*0.5, 'green');
     canvas.drawLine(0, 0, 50, 0);
+    const pos = canvas.getMousePosOnCanvas();
+    canvas.drawCircle(pos.x, pos.y, 10);
     canvas.cameraEnd();
     requestAnimationFrame(loop);
   }

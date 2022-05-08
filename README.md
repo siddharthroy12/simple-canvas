@@ -239,6 +239,13 @@ function loop() {
 }
 ```
 
+##### Get Mouse Position on canvas
+
+```js
+const pos = canvas.getMousePosOnCanvas();
+canvas.drawCircle(pos.x, pos.y, 10);
+```
+
 ##### Load Image
 
 >NOTE: This is a static method

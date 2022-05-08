@@ -14,8 +14,7 @@ type Point = {
 };
 
 // TODO:
-// Add window to canvas camera pos
-// Add canvas camera pos to canvas
+// Add a function to check if a point is visible or not
 
 class SimpleCanvas {
   canvasContext: CanvasRenderingContext2D|null;
@@ -26,11 +25,13 @@ class SimpleCanvas {
   private cameraZoom:number = 1;
   private cameraRotation:number = 0;
 
-  constructor(root: HTMLElement, private renderWidth = 128, private renderHeight = 128) {
+  private mousePosInViewport = { x:0, y: 0 };
+
+  constructor(root: HTMLElement, renderWidth = 128, renderHeight = 128) {
     const canvasEl = document.createElement("canvas");
     this.canvasElement = canvasEl;
-    canvasEl.width = this.renderWidth;
-    canvasEl.height = this.renderHeight;
+    canvasEl.width = renderWidth;
+    canvasEl.height = renderHeight;
     canvasEl.style.imageRendering = "pixelated";
 
     if (root) {
@@ -40,19 +41,50 @@ class SimpleCanvas {
     }
 
     this.canvasContext = canvasEl.getContext("2d");
+
     if (!this.canvasContext) {
       console.error("Failed to create canvas 2d context");
+    } else {
+      window.addEventListener('mousemove', (e: any) => {
+        let mouseX = 0;
+        let mouseY = 0;
+
+        if (e.touches && e.touches.length == 1) {
+          mouseX = e.touches[0].clientX;
+          mouseY = e.touches[0].clientY;
+        } else if (e.clientX && e.clientY) {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        }
+
+        const rect = this.canvasElement.getBoundingClientRect(),
+          scaleX = this.canvasElement.width / rect.width,
+          scaleY = this.canvasElement.height / rect.height;
+
+        this.mousePosInViewport.x = (mouseX - rect.left) * scaleX;
+        this.mousePosInViewport.y = (mouseY - rect.top) * scaleY;
+      });
     }
   }
 
   resizeRenderResolution(newRenderWidth: number, newRenderHeight: number) {
     if (newRenderWidth) {
-      this.renderWidth = newRenderWidth;
       this.canvasElement.width = newRenderWidth;
     }
     if (newRenderHeight) {
-      this.renderHeight = newRenderHeight;
       this.canvasElement.height = newRenderHeight;
+    }
+  }
+
+  getMousePosOnCanvas(): Point | null {
+    if (this.canvasContext) {
+      let matrix = this.canvasContext.getTransform();
+      var imatrix = matrix.invertSelf();
+      let x = this.mousePosInViewport.x * imatrix.a + this.mousePosInViewport.y * imatrix.c + imatrix.e;
+      let y = this.mousePosInViewport.x * imatrix.b + this.mousePosInViewport.y * imatrix.d + imatrix.f;
+      return {x, y};
+    } else {
+      return null
     }
   }
 
@@ -349,11 +381,10 @@ class SimpleCanvas {
 
   drawImage(image: HTMLImageElement, sx = 0, sy = 0, sWidth = 0, sHeight = 0, dx = 0, dy = 0, dWidth = 0, dHeight = 0, rotation = 0) {
     if (this.canvasContext) {
-      this.canvasContext.save();
       this.canvasContext.translate(dx + dWidth / 2, dy + dHeight / 2);
       this.canvasContext.rotate(rotation);
       this.canvasContext.drawImage(image, sx, sy, sWidth, sHeight, -dWidth / 2, -dHeight / 2, dWidth, dHeight);
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 }
