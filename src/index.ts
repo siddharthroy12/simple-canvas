@@ -19,11 +19,16 @@ type Point = {
 
 class SimpleCanvas {
   canvasContext: CanvasRenderingContext2D|null;
-  canvas: HTMLCanvasElement;
+  canvasElement: HTMLCanvasElement;
+
+  private cameraOffestX:number = 0;
+  private cameraOffestY:number = 0;
+  private cameraZoom:number = 1;
+  private cameraRotation:number = 0;
 
   constructor(root: HTMLElement, private renderWidth = 128, private renderHeight = 128) {
     const canvasEl = document.createElement("canvas");
-    this.canvas = canvasEl;
+    this.canvasElement = canvasEl;
     canvasEl.width = this.renderWidth;
     canvasEl.height = this.renderHeight;
     canvasEl.style.imageRendering = "pixelated";
@@ -43,18 +48,20 @@ class SimpleCanvas {
   resizeRenderResolution(newRenderWidth: number, newRenderHeight: number) {
     if (newRenderWidth) {
       this.renderWidth = newRenderWidth;
-      this.canvas.width = newRenderWidth;
+      this.canvasElement.width = newRenderWidth;
     }
     if (newRenderHeight) {
       this.renderHeight = newRenderHeight;
-      this.canvas.height = newRenderHeight;
+      this.canvasElement.height = newRenderHeight;
     }
   }
 
   clear(color: string) {
     if (this.canvasContext) {
+      this.createTransform(0, 0, 1, 0);
       this.canvasContext.fillStyle = !!color ? color : DEFAULT_CLEAR_COLOR;
-      this.canvasContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.canvasContext.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+      this.restoreCamera();
     }
   }
 
@@ -138,11 +145,10 @@ class SimpleCanvas {
   drawRectangle(posX = 0, posY = 0, width = 0, height = 0, rotation = 0, color = DEFAULT_FILL_STROKE_COLOR) {
     if (this.canvasContext) {
       this.canvasContext.fillStyle = color;
-      this.canvasContext.save();
       this.canvasContext.translate(posX + width / 2, posY + height / 2);
       this.canvasContext.rotate(rotation);
       this.canvasContext.fillRect(-width / 2, -height / 2, width, height);
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 
@@ -150,11 +156,10 @@ class SimpleCanvas {
     if (this.canvasContext) {
       this.canvasContext.fillStyle = color;
       this.canvasContext.lineWidth = outlineWidth;
-      this.canvasContext.save();
       this.canvasContext.translate(posX + width / 2, posY + height / 2);
       this.canvasContext.rotate(rotation);
       this.canvasContext.strokeRect(-width / 2, -height / 2, width, height);
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 
@@ -184,12 +189,11 @@ class SimpleCanvas {
   drawRectangleRounded(posX = 0, posY = 0, width = 0, height = 0, radius: Radius, rotation = 0, color = DEFAULT_FILL_STROKE_COLOR) {
     if (this.canvasContext) {
       this.canvasContext.fillStyle = color;
-      this.canvasContext.save();
       this.canvasContext.translate(posX + width / 2, posY + height / 2);
       this.canvasContext.rotate(rotation);
       this._drawRectangleRounded(-width / 2, -height / 2, width, height, radius);
       this.canvasContext.fill();
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 
@@ -197,14 +201,14 @@ class SimpleCanvas {
     if (this.canvasContext) {
       this.canvasContext.strokeStyle = color;
       this.canvasContext.lineWidth = outlineWidth;
-      this.canvasContext.save();
       this.canvasContext.translate(posX + width / 2, posY + height / 2);
       this.canvasContext.rotate(rotation);
       this._drawRectangleRounded(-width / 2, -height / 2, width, height, radius);
       this.canvasContext.stroke();
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
+
   _drawPoly(posX = 0, posY = 0, radius = 0, numberOfSides = 3) {
     if (this.canvasContext) {
       this.canvasContext.beginPath();
@@ -219,12 +223,11 @@ class SimpleCanvas {
   drawPoly(posX = 0, posY = 0, radius = 0, numberOfSides = 3, rotation = 0, color = DEFAULT_FILL_STROKE_COLOR) {
     if (this.canvasContext) {
       this.canvasContext.fillStyle = color;
-      this.canvasContext.save();
       this.canvasContext.translate(posX, posY);
       this.canvasContext.rotate(rotation);
       this._drawPoly(0, 0, radius, numberOfSides);
       this.canvasContext.fill();
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 
@@ -232,12 +235,11 @@ class SimpleCanvas {
     if (this.canvasContext) {
       this.canvasContext.strokeStyle = color;
       this.canvasContext.lineWidth = outlineWidth;
-      this.canvasContext.save();
       this.canvasContext.translate(posX, posY);
       this.canvasContext.rotate(rotation);
       this._drawPoly(0, 0, radius, numberOfSides);
       this.canvasContext.stroke();
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 
@@ -255,12 +257,11 @@ class SimpleCanvas {
   drawShape(points: Point[], origin = { x: 0, y: 0 }, rotation = 0, color = DEFAULT_FILL_STROKE_COLOR) {
     if (this.canvasContext) {
       this.canvasContext.fillStyle = color;
-      this.canvasContext.save();
       this.canvasContext.translate(origin.x, origin.y);
       this.canvasContext.rotate(rotation);
       this._drawShape(points, { x: -origin.x, y: -origin.y });
       this.canvasContext.fill();
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 
@@ -268,12 +269,11 @@ class SimpleCanvas {
     if (this.canvasContext) {
       this.canvasContext.strokeStyle = color;
       this.canvasContext.lineWidth = width;
-      this.canvasContext.save();
       this.canvasContext.translate(origin.x, origin.y);
       this.canvasContext.rotate(rotation);
       this._drawShape(points, { x: -origin.x, y: -origin.y });
       this.canvasContext.stroke();
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 
@@ -288,14 +288,13 @@ class SimpleCanvas {
   drawText(text: string, posX = 0, posY = 0, fontSize = 12, fontFamily = "serif", align: 'left' | 'right' | 'center' | 'start' | 'end' = "start", direction: 'ltr' | 'rtl' = 'ltr', maxWidth?: number, rotation = 0, origin = { x: 0, y: 0 }, color = DEFAULT_FILL_STROKE_COLOR) {
     if (this.canvasContext) {
       this.canvasContext.fillStyle = color;
-      this.canvasContext.save();
       this.canvasContext.textAlign = align;
       this.canvasContext.direction = direction;
       this.canvasContext.font = `${fontSize} ${fontFamily}`;
       this.canvasContext.translate(origin.x, origin.y);
       this.canvasContext.rotate(rotation);
       this.canvasContext.fillText(text, posX - origin.x, posY - origin.y, maxWidth);
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 
@@ -303,24 +302,44 @@ class SimpleCanvas {
     if (this.canvasContext) {
       this.canvasContext.strokeStyle = color;
       this.canvasContext.lineWidth = outlineWidth;
-      this.canvasContext.save();
       this.canvasContext.textAlign = align;
       this.canvasContext.direction = direction;
       this.canvasContext.font = `${fontSize} ${fontFamily}`;
       this.canvasContext.translate(origin.x, origin.y);
       this.canvasContext.rotate(rotation);
       this.canvasContext.strokeText(text, posX - origin.x, posY - origin.y, maxWidth);
-      this.canvasContext.restore();
+      this.restoreCamera();
     }
   }
 
-  camera(posX = 0, posY = 0, zoom = 1, rotation = 0) {
+  private createTransform(originX:number, originY:number, scale:number, rotate:number) {
     if (this.canvasContext) {
-      this.canvasContext.translate(posX + this.canvas.width / 2, posY + this.canvas.height / 2);
-      this.canvasContext.scale(zoom, zoom);
-      this.canvasContext.rotate(rotation);
+      const xAxisX = Math.cos(rotate) * scale;
+      const xAxisY = Math.sin(rotate) * scale;
+      this.canvasContext.setTransform(xAxisX, xAxisY, -xAxisY, xAxisX, originX, originY);
     }
   }
+
+  private restoreCamera() {
+    this.createTransform(this.cameraOffestX, this.cameraOffestY, this.cameraZoom, this.cameraRotation);
+  }
+
+  cameraStart(posX = 0, posY = 0, zoom = 1, rotation = 0) {
+    this.cameraOffestX = posX;
+    this.cameraOffestY = posY;
+    this.cameraZoom = zoom;
+    this.cameraRotation = rotation;
+    this.createTransform(posX, posY, zoom, rotation);
+  }
+
+  cameraEnd() {
+    this.cameraOffestX = 0;
+    this.cameraOffestY = 0;
+    this.cameraZoom = 1;
+    this.cameraRotation = 0;
+    this.createTransform(0, 0, 1, 0);
+  }
+
 
   static async loadImage(url: string) {
     return new Promise(r => { let i = new Image(); i.onload = (() => r(i)); i.src = url; });

@@ -17,6 +17,7 @@ $ yarn add simple-canvas2d
 ```
 
 Using CDN:
+
 ```sh
 Cooming soon
 ```
@@ -48,7 +49,7 @@ if (root) {
 
 ## API
 
-###### Creating a canvas
+##### Creating a canvas
 
 Note that the renderWidth and renderHeight is how many pixels the canvas is going to use for rendering and this does not change the actual width and height of the canvas element, for that use CSS
 
@@ -56,13 +57,14 @@ Note that the renderWidth and renderHeight is how many pixels the canvas is goin
 const canvas = new SimpleCanvas(root, renderWidth, renderHeight);
 ```
 
-###### Resize Render Resolution
+##### Resize Render Resolution
 
 ```js
 canvas.resizeRenderResolution(newRenderWidth, newRenderHeight);
 ```
 
-###### Clear canvas
+##### Clear canvas
+
 Clear the entire canvas with any color
 > NOTE: The color is a CSS color value
 
@@ -70,7 +72,7 @@ Clear the entire canvas with any color
 canvas.clear(color);
 ```
 
-###### Draw Pixel
+##### Draw Pixel
 
 > NOTE: The color is a CSS color value
 
@@ -78,65 +80,72 @@ canvas.clear(color);
 canvas.drawPixel(posX, posY, color);
 ```
 
-###### Draw Line
+##### Draw Line
 
 ```js
 canvas.drawLine(startPosX, startPosY, endPosX, endPosY, width, color);
 ```
 
-###### Draw Circle
+##### Draw Circle
 
 ```js
 canvas.drawCircle(posX, posY, radius, color);
 ```
 
-###### Draw Circle Outline
+##### Draw Circle Outline
 
 ```js
 canvas.drawCircleOutline(posX, posY, radius, width, color);
 ```
 
-###### Draw Circle Outline
+##### Draw Circle Outline
 
 ```js
 canvas.drawCircleOutline(posX, posY, radius, width, color);
 ```
 
-###### Draw Arc
+##### Draw Arc
+
 > NOTE: angle is in radian, Math.PI is half circle and Math.PI*2 is full circle
+
 ```js
 canvas.drawArc(posX, posY, radius, startAngle, endAngle, color);
 ```
 
-###### Draw Arc Outline
+##### Draw Arc Outline
+
 ```js
 canvas.drawArc(posX, posY, radius, startAngle, endAngle, width, color);
 ```
 
 ###### Draw Ellipse
+
 ```js
 canvas.drawEllipse(posX, posY, radiusX, radiusY, rotation, startAngle, endAngle, color);
 ```
 
-###### Draw Ellipse Outline
+##### Draw Ellipse Outline
+
 ```js
 canvas.drawEllipseOutline(posX, posY, radiusX, radiusY, rotation, startAngle, endAngle, width, color);
 ```
 
-###### Draw Rectangle
+##### Draw Rectangle
 
 ```js
 canvas.drawRectangle(posX, posY, width, height, rotation, color);
 ```
 
-###### Draw Rectangle Outline
+##### Draw Rectangle Outline
 
 ```js
 canvas.drawRectangleOutline(posX, posY, width, height, rotation, outlineWidth, color);
 ```
 
-###### Draw Rectangle Rounded
+##### Draw Rectangle Rounded
+
 The radius can be either a number for all sides or it can be a object of type
+
 ```js
 {
   tl: number; // Top left
@@ -145,76 +154,105 @@ The radius can be either a number for all sides or it can be a object of type
   bl: number; // Bottom left
 }
 ```
+
 ```js
 canvas.drawRectangleRounded(posX, posY, width, height, radius, rotation, color)
 ```
 
-###### Draw Rectangle Rounded Outline
+##### Draw Rectangle Rounded Outline
+
 ```js
 canvas.drawRectangleRoundedOutline(posX, posY, width, height, radius, rotation, outlineWidth, color);
 ```
 
-###### Draw Polygon
+##### Draw Polygon
+
 ```js
 canvas.drawPoly(posX, posY, radius, numberOfSides, rotation, color);
 ```
 
-###### Draw Polygon Outline
+##### Draw Polygon Outline
+
 ```js
 canvas.drawPolyOutline(posX, posY, radius, numberOfSides, rotation, outlineWidth, color);
 ```
 
-###### Draw Shape from points
+##### Draw Shape from points
+
 The points is an array of type
+
 ```js
 {
     x: number;
     y: number;
 }
+
 ```
+
 The origin is also of type `{ x:number, y:number }` used for rotation, leave it to `{ x: 0, y: }` if rotation is 0
+
 ```js
 canvas.drawShape(points, origin, rotation, color);
 ```
 
-###### Draw Shape outline from points
+##### Draw Shape outline from points
+
 ```js
 canvas.drawShapeOutline(points, origin, rotation, width color);
 ```
 
-###### Measure Text Width
+##### Measure Text Width
+
 ```js
 canvas.measureText(text, fontSize, fontFamily);
 ```
 
-###### Draw Text
+##### Draw Text
+
 `align` can be `'left'`, `'right'` , `'center'`, `'start'`or `'end'`.
-`direction` can be `'ltr'` or `'rtl'`. 
+`direction` can be `'ltr'` or `'rtl'`.
 `maxWidth` will be ignored if set `undefined`
+
 ```js
 canvas.drawText(text, posX, posY, fontSize, fontFamily, align, direction, maxWidth, rotation, origin, color);
 ```
 
-###### Draw Text Outline
+##### Draw Text Outline
+
 ```js
 canvas.drawText(text, posX, posY, fontSize, fontFamily, align, direction, maxWidth, rotation, origin, lineWidth, color);
 ```
 
-###### Set Camera
+##### Set Camera
+
 Set where the camera will look at with zoom and rotation
+
 ```js
-canvas.camera(posX, posY, zoom, rotation);
+function loop() {
+  canvas.clear('#f1f1f1');
+  canvas.cameraStart(0, 0, 1, Math.PI*0.25);
+  canvas.drawCircle(0 , 0, 10);
+  canvas.drawRectangle(50, -10, 40, 20, Math.PI*0.5, 'green');
+  canvas.drawLine(0, 0, 50, 0);
+  canvas.cameraEnd();
+  requestAnimationFrame(loop);
+}
 ```
 
-###### Load Image
+##### Load Image
+
 >NOTE: This is a static method
+
 ```js
-canvas.loadImage(url)
+SimpleCanvas.loadImage(url)
     .then(image => {});
 ```
 
-###### Draw Image
+##### Draw Image
+
 ![explaination](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage/canvas_drawimage.jpg)
+
 ```js
 drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight, rotation);
 ```
+
