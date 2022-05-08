@@ -325,11 +325,13 @@ class SimpleCanvas {
   }
 
   cameraStart(posX = 0, posY = 0, zoom = 1, rotation = 0) {
-    this.cameraOffestX = posX;
-    this.cameraOffestY = posY;
+    const finalX = posX + this.canvasElement.width/2;
+    const finalY = posY + this.canvasElement.height/2;
+    this.cameraOffestX = finalX;
+    this.cameraOffestY = finalY;
     this.cameraZoom = zoom;
     this.cameraRotation = rotation;
-    this.createTransform(posX, posY, zoom, rotation);
+    this.createTransform(finalX, finalY, zoom, rotation);
   }
 
   cameraEnd() {
