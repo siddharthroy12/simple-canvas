@@ -10,7 +10,7 @@ module.exports = defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
-      name: 'simpleCanvas2d',
+      name: 'SimpleCanvas2D',
       fileName: (format) => `index.${format}.js`
     }
   }

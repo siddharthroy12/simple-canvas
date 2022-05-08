@@ -18,21 +18,24 @@ $ yarn add simple-canvas2d
 
 Using CDN:
 
-```sh
-Cooming soon
+```html
+<body>
+... rest of the body
+
+<script src="https://cdn.jsdelivr.net/npm/simple-canvas2d/dist/index.umd.js" defer></script>
+</body>
 ```
 
 ## Example
-
 ```js
-import SimpleCanvas from 'simple-canvas2d';
+import SimpleCanvas2D from 'simple-canvas2d';
 
 // Where you want to add the canvas element
 const root = document.getElementById('app');
 
 if (root) {
   // Create a new Canvas with 500x500 pixels
-  const canvas = new SimpleCanvas(root, 500, 500);
+  const canvas = new SimpleCanvas2D(root, 500, 500);
 
   // Animation loop
   function loop() {

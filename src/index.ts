@@ -16,7 +16,7 @@ type Point = {
 // TODO:
 // Add a function to check if a point is visible or not
 
-class SimpleCanvas {
+class SimpleCanvas2D {
   canvasContext: CanvasRenderingContext2D|null;
   canvasElement: HTMLCanvasElement;
 
@@ -389,4 +389,4 @@ class SimpleCanvas {
   }
 }
 
-export { SimpleCanvas as default };
+export { SimpleCanvas2D as default };
